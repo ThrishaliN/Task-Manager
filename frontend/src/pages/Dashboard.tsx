@@ -5,14 +5,13 @@ import StatCard from '../components/dashboard/StatCard';
 import RecentTasks from '../components/dashboard/RecentTasks';
 import TaskChart from '../components/dashboard/TaskChart';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
-import QuickActions from '../components/dashboard/QuickActions';
 import ProgressChart from '../components/dashboard/ProgressChart';
 import { useAuthStore } from '../store/auth';
 import { useTasksStore } from '../store/tasks';
 import { TaskStatus } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuthStore();
+  const { logout } = useAuthStore();
   const { tasks, taskStats, fetchTasks, fetchTaskStats, isLoading } = useTasksStore();
 
   useEffect(() => {
@@ -25,7 +24,7 @@ const Dashboard: React.FC = () => {
     action: string;
     task: string;
     time: string;
-    type: "completed" | "created" | "updated" | "warning";
+    type: 'completed' | 'created' | 'updated' | 'warning';
   }[] = [
     { id: 1, action: 'Task completed', task: 'Design Homepage', time: '2 hours ago', type: 'completed' },
     { id: 2, action: 'New task created', task: 'API Integration', time: '4 hours ago', type: 'created' },
@@ -58,7 +57,7 @@ const Dashboard: React.FC = () => {
         <div className="page-header">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
           <p className="mt-2 text-lg text-gray-600">
-            Welcome back, {user?.name || 'User'}! Here's your productivity overview.
+            Welcome back!, Here's your productivity overview.
           </p>
         </div>
       </div>
@@ -126,7 +125,6 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          <QuickActions />
 
           {typeof taskStats.overdue === 'number' && taskStats.overdue > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
