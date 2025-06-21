@@ -1,24 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   CheckSquare, 
   BarChart2, 
   List, 
   Plus, 
-  Settings, 
-  LogOut, 
-  User 
+  LogOut 
 } from 'lucide-react';
 import { useAuthStore } from '../../store/auth';
+import { Button } from '../ui/Button'; // Adjust the import path as needed
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const location = useLocation();
-  
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
   
+  const handleLogoutConfirm = (confirm: boolean) => {
+    setShowLogoutConfirm(false);
+    if (confirm) {
+      logout();
+    }
+  };
+
   return (
     <header className="bg-white shadow">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -79,50 +86,21 @@ const Header: React.FC = () => {
                   </span>
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/settings"
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive('/settings')
-                      ? 'bg-accent-100 text-accent-700'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <span className="flex items-center">
-                    <Settings className="mr-1.5 h-4 w-4" />
-                    Settings
-                  </span>
-                </Link>
-              </li>
             </ul>
           </nav>
           
-          {/* User Menu */}
-          {user && (
-            <div className="relative ml-3">
-              <div className="flex items-center space-x-4">
-                <div className="hidden md:block">
-                  <p className="text-sm font-medium text-gray-700">{user.name}</p>
-                  <p className="text-xs text-gray-500">{user.email}</p>
-                </div>
-                <div className="flex items-center">
-                  <img
-                    className="h-8 w-8 rounded-full object-cover border border-gray-200"
-                    src={user.picture}
-                    alt={user.name}
-                  />
-                  <button
-                    onClick={logout}
-                    className="ml-2 flex items-center rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100"
-                    title="Logout"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="ml-1 hidden sm:inline">Logout</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Logout Button */}
+          <div className="ml-3">
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => setShowLogoutConfirm(true)}
+              title="Logout"
+            >
+              <LogOut className="mr-1.5 h-4 w-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
+          </div>
         </div>
       </div>
       
@@ -156,17 +134,41 @@ const Header: React.FC = () => {
             <Plus className="h-5 w-5" />
             <span className="mt-1">New Task</span>
           </Link>
-          <Link
-            to="/settings"
-            className={`flex flex-col items-center px-3 py-2 text-xs font-medium ${
-              isActive('/settings') ? 'text-accent-600' : 'text-gray-600'
-            }`}
+          <div
+            className="flex flex-col items-center px-3 py-2 text-xs font-medium text-gray-600"
+            onClick={() => setShowLogoutConfirm(true)}
           >
-            <User className="h-5 w-5" />
-            <span className="mt-1">Profile</span>
-          </Link>
+            <LogOut className="h-5 w-5" />
+            <span className="mt-1">Logout</span>
+          </div>
         </div>
       </div>
+
+      {/* Logout Confirmation Popout */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Confirm Logout</h3>
+            <p className="text-sm text-gray-600 mb-6">Are you sure you want to logout?</p>
+            <div className="flex justify-end space-x-4">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => handleLogoutConfirm(false)}
+              >
+                No
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => handleLogoutConfirm(true)}
+              >
+                Yes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
